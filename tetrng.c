@@ -51,7 +51,7 @@ static int piece_index(char piece)
 
 static struct target *prepare_targets(const char *goal, size_t *length_out)
 {
-    static const uint8_t initial_history[4] = {2, 1, 2, 1}; /* SZSZ */
+    static const uint8_t initial_history[3] = {2, 2, 1}; /* SSZ */
     const size_t length = strlen(goal);
 
     if (length == 0) {
@@ -80,10 +80,10 @@ static struct target *prepare_targets(const char *goal, size_t *length_out)
     for (size_t i = 1; i < length; ++i) {
         uint8_t mask = 0;
 
-        for (size_t position = i; position < i + 4; ++position) {
-            const uint8_t piece = position < 4
+        for (size_t position = i - 1; position < i + 3; ++position) {
+            const uint8_t piece = position < 3
                                       ? initial_history[position]
-                                      : targets[position - 4].piece;
+                                      : targets[position - 3].piece;
             mask |= (uint8_t)(1U << piece);
         }
         targets[i].history_mask = mask;
@@ -113,6 +113,7 @@ static inline bool seed_matches(uint32_t seed, const struct target *targets,
 
             /* A rejected roll advances the Python reference a second time. */
             state = rng_hash(state);
+            piece = state_to_piece(state);
         }
 
         if (piece != targets[i].piece) {

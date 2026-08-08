@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 
 
@@ -27,12 +29,12 @@ def num2piece(x):
 
 def seed_search(goal):
     # goal will double as a history -- no sense to shuffling history around in the loop when it has a known state
-    goal = 'SZSZ' + goal
+    goal = 'SSZ' + goal
 
     for seed in range(0xFFFFFFFF):
 
         # first piece handled differently -- straight mod 7
-        i = 4
+        i = 3
         rng_state = hash(seed)
         piece = num2piece(rng_state)
         if piece != goal[i]:
@@ -48,13 +50,14 @@ def seed_search(goal):
                 if piece not in history:
                     break
                 rng_state = hash(rng_state) # rerolls hash an extra time, also doubles as a sneaky 6th roll in a loop of 5
+                piece = num2piece(rng_state)
             if piece != goal[i]:
                 break
             i += 1
         if i == len(goal):
             print("matching seed:", seed)
-            return
-    print("no seed found")
+            break
+    print("complete")
 
 
 def main():
